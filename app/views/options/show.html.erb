@@ -1,0 +1,28 @@
+<p>
+  <b>Code:</b>
+  <%=h @option.code %>
+</p>
+
+<p>
+  <b>Label:</b>
+  <%=h @option.label %>
+</p>
+
+<p>
+  <b>Template:</b>
+  <%=h @option.template %>
+</p>
+
+<p>
+  <b>Procedure:</b>
+  <%=h @option.procedure %>
+</p>
+
+<p>
+  <b>Expired at:</b>
+  <%=h @option.expired_at %>
+</p>
+
+
+<%= link_to 'Edit', edit_option_path(@option) %> |
+<%= link_to 'Back', options_path %>

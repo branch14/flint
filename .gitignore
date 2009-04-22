@@ -1,0 +1,8 @@
+.loadpath
+.project
+db/schema.rb
+*~
+tmp/**/*
+doc/api
+doc/app
+log/*.log

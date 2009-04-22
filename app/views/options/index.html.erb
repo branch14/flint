@@ -1,0 +1,42 @@
+<center>
+<% form_tag :action => :execute_by_code do %>
+Code: <%= text_field_tag :id %>
+<%= submit_tag 'Execute' %>
+<% end %>
+</center>
+
+<hr />
+
+<h1>Listing options</h1>
+
+<table>
+  <tr>
+    <th>Code</th>
+    <th>Label</th>
+    <th>Procedure</th>
+    <th colspan='2'>Actions</th>
+    <th>More Actions</th>
+  </tr>
+
+<% @options.each do |option| %>
+  <tr style="background-color: <%= option.color %>">
+    <td><%=link_to option.code, :code => option.code %></td>
+    <td><%=h option.label %></td>
+    <td><pre><%=h option.procedure %></pre></td>
+    <td><%= link_to 'Edit', edit_option_path(option) %></td>
+    <td><%= link_to 'Destroy', option, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td>
+<% if option.template %>
+ <%= link_to 'Create', :action => :new, :code => option.code %>
+<% elsif !option.is_expired? %>
+ <%= link_to 'Execute', :action => :execute, :id => option %>
+<% end %>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New option', new_option_path %>
+
