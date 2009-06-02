@@ -4,8 +4,8 @@ class Option < ActiveRecord::Base
     expired_at and (expired_at <= Time.now)
   end
 
-  def execute
-    eval(procedure) unless is_expired? or template
+  def execute(prefix='')
+    eval(prefix+"\n"+procedure) unless is_expired?
   end
 
   def color
@@ -14,15 +14,14 @@ class Option < ActiveRecord::Base
     'lightblue'
   end
 
-  # ------------------------------------------------------------
-
   def expire!
     self.expired_at = Time.now
     save!
   end
 
-  def eject
-    %x[eject]
+  def activate!
+    self.expired_at = nil
+    save!
   end
 
 end

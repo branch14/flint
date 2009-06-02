@@ -15,9 +15,8 @@ Code: <%= text_field_tag :id %>
     <th>Label</th>
     <th>Procedure</th>
     <th colspan='2'>Actions</th>
-    <th>More Actions</th>
+    <th colspan='2'>More Actions</th>
   </tr>
-
 <% @options.each do |option| %>
   <tr style="background-color: <%= option.color %>">
     <td><%=link_to option.code, :code => option.code %></td>
@@ -25,11 +24,14 @@ Code: <%= text_field_tag :id %>
     <td><pre><%=h option.procedure %></pre></td>
     <td><%= link_to 'Edit', edit_option_path(option) %></td>
     <td><%= link_to 'Destroy', option, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Dupilcate', :action => :duplicate, :id => option %></td>
     <td>
-<% if option.template %>
- <%= link_to 'Create', :action => :new, :code => option.code %>
-<% elsif !option.is_expired? %>
- <%= link_to 'Execute', :action => :execute, :id => option %>
+<% if !option.template? %>
+ <% if !option.is_expired? %>
+  <%= link_to 'Execute', :action => :execute, :id => option %>
+ <% else %>
+  <%= link_to 'Activate', :action => :activate, :id => option %>
+ <% end %>
 <% end %>
     </td>
   </tr>

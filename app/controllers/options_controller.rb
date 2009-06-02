@@ -4,7 +4,7 @@ class OptionsController < ApplicationController
   # GET /options.xml
   def index
     conditions = params[:code] ? ['code = ?', params[:code]] : []
-    @options = Option.all(:conditions => conditions, :order => 'template DESC, id ASC')
+    @options = Option.all(:conditions => conditions, :order => 'updated_at DESC, id ASC')
 
     respond_to do |format|
       format.html # index.html.erb
@@ -27,7 +27,6 @@ class OptionsController < ApplicationController
   # GET /options/new.xml
   def new
     @option = Option.new
-    @option.code = params[:code]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -87,11 +86,31 @@ class OptionsController < ApplicationController
     end
   end
 
+  def duplicate
+    option = Option.find(params[:id])
+    # FIXME missing link here! apply default values to new
+    # google: duplicate rails model, activerecord init
+    @option = Option.new
+    respond_to do |format|
+      format.html { render :action => "new" }
+      format.xml  { render :xml => @option }
+    end
+  end
+
+  def activate
+    @option = Option.find(params[:id])
+    @option.activate!
+    flash[:notice] = "<b>Option <i>#{@option.label}</i> activated."
+    respond_to do |format|
+      format.html { redirect_to(options_url) }
+      format.xml  { head :ok }
+    end
+  end
 
   def execute
     @option = Option.find(params[:id])
-    @option.execute
-    flash[:notice] = "Option <i>#{@option.label}</i> executed."
+    output = @option.execute
+    flash[:notice] = "<b>Option <i>#{@option.label}</i> executed directly. Output was:</b><br />#{output}"
 
     respond_to do |format|
       format.html { redirect_to(options_url) }
@@ -104,8 +123,9 @@ class OptionsController < ApplicationController
     @options.reject!(&:is_expired?)
     @options.reject!(&:template)
     unless @options.empty?
-      @options.each { |option| option.execute }
-      flash[:notice] = "Options <i>#{@options.map(&:label)*', '}</i> executed."
+      output = @options.map { |option| option.execute }.join("\n")
+      o = output.gsub("\n", '<br />')
+      flash[:notice] = "<b>Options <i>#{@options.map(&:label)*', '}</i> executed by code. Output was:</b><br />#{o}"
     else
       # HACK!
       flash[:error] = "Not found. Click here to create a new option for code <a href='/options/new/?code=#{params[:id]}'>#{params[:id]}</a>"
@@ -113,7 +133,7 @@ class OptionsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to(options_url) }
-      format.xml  { head :ok }
+      format.xml { render :xml => $player.status_in_xml(output) }
     end
   end
 
