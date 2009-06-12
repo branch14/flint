@@ -129,6 +129,7 @@ class OptionsController < ApplicationController
     else
       # HACK!
       flash[:error] = "Not found. Click here to create a new option for code <a href='/options/new/?code=#{params[:id]}'>#{params[:id]}</a>"
+      output = "Code unbekannt."
     end
 
     respond_to do |format|
