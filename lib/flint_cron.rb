@@ -17,7 +17,7 @@ until shutdown
 
   # add a song if playlist doesn't contain at least 3 entries
   if xmms.list.size < 3
-    Utils::mix_in_our_stuff(xmms)
+    Utils.mix_in_our_stuff(xmms)
   end
 
 end
