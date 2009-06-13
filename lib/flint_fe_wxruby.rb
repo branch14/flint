@@ -4,7 +4,7 @@ require 'rubygems'
 require 'wx'
 
 require 'open-uri'
-require 'xml_simple'
+require 'xmlsimple'
 
 # returns xml
 def call_flint(code='0')
@@ -18,17 +18,17 @@ class FlintPanel < Wx::Panel
   def initialize(parent)
     super(parent)
     evt_paint :on_paint
-    #evt_timer 5000, :update
     evt_char :on_char
     @buffer = ''
     @data = nil
-    update
+    _update
+    set_focus
   end
 
   def on_char(e)
     k = e.get_key_code
     if k==13
-      update(@buffer)
+      _update(@buffer)
       @buffer = ''
     else
       @buffer << k.chr
@@ -36,7 +36,7 @@ class FlintPanel < Wx::Panel
     e.skip
   end
 
-  def update(code='0')
+  def _update(code='0')
     puts "sending code #{code}"
     @data = XmlSimple.xml_in(call_flint(code))
     refresh
@@ -46,27 +46,45 @@ class FlintPanel < Wx::Panel
     paint do |dc|
       if @data
         dc.set_background Wx::BLACK_BRUSH
-        dc.set_brush Wx::GREEN_BRUSH
         dc.clear
-        entries = @data['playlist'].first['entry'].sort_by { |e| e['position'] }
-        y = 0
-        entries.each_with_index do |e, i|
-          pos = e['position'].first.to_i
-          dc.draw_rectangle(100-12, 100-4, 400+24+24+2, 24) if pos==0
-          dc.set_text_foreground(pos>0 ? Wx::GREEN : Wx::BLACK)
-          info = e['artist'].first+' - '+e['title'].first
-          dc.draw_text(info, 100, 100 + i * 24)
-          dc.draw_text(e['duration'].first, 500, 100 + i * 24)
+        dc.set_font(Wx::Font.new(20, Wx::FONTFAMILY_DECORATIVE, Wx::FONTSTYLE_NORMAL, Wx::FONTWEIGHT_NORMAL))
+        dc.set_brush Wx::GREEN_BRUSH
+        if entries = @data['playlist'].first['entry']
+          entries = entries.sort_by { |e| e['position'] }
+          y = 0
+          entries.each_with_index do |e, i|
+            pos = e['position'].first.to_i
+            dc.draw_rectangle(0, 100-4, 1024, 40) if pos==0
+            dc.set_text_foreground(pos>0 ? Wx::GREEN : Wx::BLACK)
+            data = [e['collection'].first, e['artist'].first, e['title'].first]
+            info = "%s: %s - %s" % data
+            dc.draw_text(info, 40, 100 + i * 40)
+            dc.draw_text(e['duration'].first, 1024-100, 100 + i * 40)
+          end
+          message = @data['message'].first
+          unless message.empty?
+            dc.set_brush Wx::GREEN_BRUSH
+            dc.draw_rectangle(0, 500, 1024, 768 - 500 - 40)
+            dc.set_text_foreground(Wx::BLACK)
+            dc.draw_text(message, 40, 520) 
+          end
         end
-        message = @data['message'].first
-        dc.draw_text(message, 100, 500) unless message.empty?
+        if ttl = @data['track_ttl'].first.to_i
+          timer = Wx::Timer.new(self)
+          evt_timer(timer.id) { _update }
+          timer.start(ttl)
+        end
+      else
+        dc.set_brush Wx::GREEN_BRUSH
+        dc.draw_circle(1024 / 2, 768 /2, 300)
+        dc.set_brush Wx::BLACK_BRUSH
+        dc.draw_circle(1024 / 2, 768 /2, 260)
+        dc.set_brush Wx::GREEN_BRUSH
+        dc.draw_rectangle(1024 / 2 - 25, 768 / 2 - 25, 200, 50)
+        dc.draw_rectangle(1024 / 2 - 25, 768 / 2 - 25, 50, -200)
       end
     end
   end
-
-  #def animate
-  #  refresh
-  #end
 
 end
 
@@ -76,11 +94,8 @@ class FlintFrame < Wx::Frame
 
   def initialize
     wtitle = "FlintFE"
-    #wpos   = Wx::DEFAULT_POSITION
     wpos   = Wx::Point.new(0, 0)
-    #wsize  = Wx::Size.new(640, 480)
     wsize  = Wx::Size.new(1024, 768)
-    #wstyle = Wx::DEFAULT_FRAME_STYLE # | Wx::WANTS_CHARS # Wx::BORDER_NONE
     wstyle = Wx::BORDER_NONE
     super(nil, -1, wtitle, wpos, wsize, wstyle)
     panel = FlintPanel.new(self)

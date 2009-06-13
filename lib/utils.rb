@@ -12,13 +12,15 @@ module Utils
     end
     
     def umount_usb
-      %x[umount /media/usb]
+      %x[umount #{usb?}]
     end
 
     def source
       return '/media/usb/mp3test/' unless Dir.glob('/media/usb/mp3test/**').empty? # testing
       return '/media/cdrom/' if cdrom?
-      return '/media/usb/' if usb?
+      if path = usb?
+        return path
+      end
       return false
     end
 
@@ -27,7 +29,12 @@ module Utils
     end
 
     def usb?
-      !Dir.glob('/media/usb/**').empty?
+      #!Dir.glob('/media/usb/**').empty?
+      output = %x[mount | grep 'uhelper=hal']
+      if md = output.match(/.* on (.*) type .*/)
+        return md[1]
+      end
+      false
     end
     
   end

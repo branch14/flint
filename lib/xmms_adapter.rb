@@ -23,8 +23,9 @@ class XmmsAdapter
   # returns status in xml
   def status_in_xml(message='')
     Builder::XmlMarkup.new(:indent => 2).response do |r|
+      r.track_ttl(track_ttl)
       r.playlist do |p|
-        list(5, 0).each_with_index do |entry, index|
+        list(9, 0).each_with_index do |entry, index|
           p.entry do |e|
             e.position(index)
             e.title(entry[:title])
@@ -36,6 +37,10 @@ class XmmsAdapter
       end
       r.message(message)
     end
+  end
+
+  def track_ttl
+    list(1, 0).first[:duration] - @xmms.playback_playtime.wait.value
   end
 
   # returns @string@, which is name of first collection found,
@@ -181,6 +186,8 @@ if $0 == __FILE__
     puts xmms.status_in_xml('no message')
     when 'colls'
     puts xmms.collection_name(616)
+    when 'ttl'
+    puts xmms.track_ttl
   end
   xmms.play
 end

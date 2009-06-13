@@ -4,15 +4,20 @@ Flint is a Rails based Web App for Applications that deal with barcodes.
 
 Requirements
 
-  $ apt-get install libxmmsclient-ruby
+  $ apt-get install xmms2 libxmmsclient-ruby libopenssl-ruby libsqlite3-ruby
+  $ gem install rails
+
+Run
+
+  $ script/server
 
 
 == Front End ==
 
 Requirements
 
-  $ gem install xml-simple
-  $ gem install wxruby
+  $ sudo apt-get install libwxgtk2.8-0
+  $ gem install wxruby xml-simple
 
 Run
 
