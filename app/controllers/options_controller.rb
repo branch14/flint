@@ -46,8 +46,8 @@ class OptionsController < ApplicationController
 
     respond_to do |format|
       if @option.save
-        flash[:notice] = 'Option was successfully created.'
-        format.html { redirect_to(@option) }
+        flash[:notice] = "Option with code #{@option.code} was successfully created."
+        format.html { redirect_to(options_url) }
         format.xml  { render :xml => @option, :status => :created, :location => @option }
       else
         format.html { render :action => "new" }
@@ -63,7 +63,7 @@ class OptionsController < ApplicationController
 
     respond_to do |format|
       if @option.update_attributes(params[:option])
-        flash[:notice] = 'Option was successfully updated.'
+        flash[:notice] = "Option with code #{@option.code} was successfully updated."
         # format.html { redirect_to(@option) }
         format.html { redirect_to(options_url) }
         format.xml  { head :ok }
@@ -90,7 +90,8 @@ class OptionsController < ApplicationController
     option = Option.find(params[:id])
     # FIXME missing link here! apply default values to new
     # google: duplicate rails model, activerecord init
-    @option = Option.new
+    
+    @option = Option.new(:procedure => option.procedure, :label => option.label, :code => option.code, :template => option.template, :expired_at => option.expired_at)
     respond_to do |format|
       format.html { render :action => "new" }
       format.xml  { render :xml => @option }
