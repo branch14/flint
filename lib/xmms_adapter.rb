@@ -32,6 +32,7 @@ class XmmsAdapter
             e.artist(entry[:artist])
             e.duration(duration_format(entry[:duration]))
             e.collection(collection_name(entry[:id]))
+            e.url(entry[:url])
           end
         end
       end

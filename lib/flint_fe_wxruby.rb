@@ -42,6 +42,13 @@ class FlintPanel < Wx::Panel
     e.skip
   end
 
+  # rewrite file url to array consisting of [<last_directory_name>, <file_name>]
+  def _rewrite(url)
+     url = url.gsub("\+"," ")
+     url.sub(Regexp.new('(.*)/([^/]*)/(.*)'),"\\2")
+     [ $2, $3 ]
+  end
+
   def _update(code='0')
     puts "sending code #{code}"
     @data = XmlSimple.xml_in(call_flint(code))
@@ -62,7 +69,12 @@ class FlintPanel < Wx::Panel
             pos = e['position'].first.to_i
             dc.draw_rectangle(0, 100-4, 1024, 40) if pos==0
             dc.set_text_foreground(pos>0 ? Wx::GREEN : Wx::BLACK)
-            data = [e['collection'].first, e['artist'].first, e['title'].first]
+	    # take url into account, if no id3 tag is given
+	    if e['artist'].first.size==0
+              data = [e['collection'].first] + _rewrite(e['url'].first)
+	    else
+              data = [e['collection'].first, e['artist'].first, e['title'].first]
+	    end
             info = "%s: %s - %s" % data
             dc.draw_text(info, 40, 100 + i * 40)
             dc.draw_text(e['duration'].first, 1024-100, 100 + i * 40)
