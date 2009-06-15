@@ -6,12 +6,8 @@ require 'wx'
 require 'open-uri'
 require 'xmlsimple'
 
-require 'uri'
-
 # returns xml
 def call_flint(code='0')
-  # securely encode URI to skip on "strange" chars like '|()[]}...'
-  code = URI.escape(code, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
   open("http://0.0.0.0:3000/options/execute_by_code/#{code}.xml").read
 end
 
@@ -32,10 +28,10 @@ class FlintPanel < Wx::Panel
   def on_char(e)
     k = e.get_key_code
     if k==13
-      _update(@buffer) if @buffer.size > 0      # just hitting enter shouldn't trigger an update
+      _update(@buffer)
       @buffer = ''
     else
-      @buffer << k.chr if k < 127 && k > 33     # only take printable characters into account
+      @buffer << k.chr
     end
     e.skip
   end
