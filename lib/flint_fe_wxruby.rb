@@ -45,7 +45,7 @@ class FlintPanel < Wx::Panel
   # rewrite file url to array consisting of [<last_directory_name>, <file_name>]
   def _rewrite(url)
      url = url.gsub("\+"," ")
-     url.sub(Regexp.new('(.*)/([^/]*)/(.*)'),"\\2")
+     url.match('(.*)/([^/]*)/(.*)')
      [ $2, $3 ]
   end
 
