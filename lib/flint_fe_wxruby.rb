@@ -34,6 +34,8 @@ class FlintPanel < Wx::Panel
     if k==13
       _update(@buffer) if @buffer.size > 0      # just hitting enter shouldn't trigger an update
       @buffer = ''
+    elsif k==27 || k==8				# ESC and Backspace exit program
+      exit 1
     else
       @buffer << k.chr if k < 127 && k > 33     # only take printable characters into account
     end
