@@ -2,6 +2,14 @@
 
 Flint is a Rails based Web App for Applications that deal with barcodes.
 
+Currently it's pragamtically aimed towards a runnig media art
+installation in conjunction with xmms2.
+
+It consist of three parts:
+
+
+=== I Backend ===
+
 Requirements
 
   $ apt-get install xmms2 libxmmsclient-ruby libopenssl-ruby libsqlite3-ruby
@@ -12,7 +20,14 @@ Run
   $ script/server
 
 
-== Front End ==
+=== II Cron/Daemon ===
+
+Run
+
+  $ ruby lib/flint_cron.rb
+
+
+=== III Frontend ===
 
 Requirements
 
@@ -24,7 +39,13 @@ Run
   $ ruby lib/flint_fe_wxruby.rb
 
 
-== API ==
+=== Suggestion ===
+
+  $ xterm -e ruby lib/flint_fe_wxruby.rb &
+  $ xterm -e ruby lib/flint_cron.rb &
+  $ xterm -e ruby lib/flint_fe_wxruby.rb &
+
+=== API ===
 
 Functions called by client
 
