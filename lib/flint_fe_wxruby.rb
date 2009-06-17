@@ -42,11 +42,12 @@ class FlintPanel < Wx::Panel
     e.skip
   end
 
-  # rewrite file url to array consisting of [<last_directory_name>, <file_name>]
+  # rewrite file url to array consisting of [<file_name>]
   def _rewrite(url)
      url = url.gsub("\+"," ")
-     url.match('(.*)/([^/]*)/(.*)')
-     [ $2, $3 ]
+     # url.match('(.*)/([^/]*)/(.*)') # to match last-directory-name and file-name (decommitted)
+     url.match('(.*)/(.*)')
+     [ $2 , nil ]   # (nil to satisfy printf statement, which expects two arguments
   end
 
   def _update(code='0')
