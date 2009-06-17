@@ -88,9 +88,12 @@ class FlintPanel < Wx::Panel
           end
         end
         if ttl = @data['track_ttl'].first.to_i
-          timer = Wx::Timer.new(self)
-          evt_timer(timer.id) { _update }
-          timer.start(ttl)
+          unless @timer 
+	    @timer = Wx::Timer.new(self)
+            evt_timer(@timer.id) { _update }
+	  end
+          @timer.stop 
+          @timer.start(ttl)
         end
       else
         dc.set_brush Wx::GREEN_BRUSH
