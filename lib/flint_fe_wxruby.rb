@@ -44,11 +44,12 @@ class FlintPanel < Wx::Panel
     e.skip
   end
 
-  # rewrite file url to array consisting of [<last_directory_name>, <file_name>]
+  # rewrite file url to array consisting of [<file_name>]
   def _rewrite(url)
-     url = url.gsub("\+"," ")
-     url.match('(.*)/([^/]*)/(.*)')
-     [ $3,  nil ]
+     url.gsub!("\+"," ")
+     # url.match('(.*)/([^/]*)/(.*)') # to match last-directory-name and file-name (decommitted)
+     url.match('(.*)/(.*)')
+     [ $2 , nil ]   # (nil to satisfy printf statement, which expects two arguments
   end
 
   def _update(code='0')
@@ -90,8 +91,6 @@ class FlintPanel < Wx::Panel
           end
         end
         if ttl = @data['track_ttl'].first.to_i
-          # timer = Wx::Timer.new(self)
-          # evt_timer(timer.id) { _update }
           @timer.stop
           @timer.start(ttl)
         end
