@@ -4,6 +4,21 @@ module Utils
 
   class << self
 
+    def mount_USB
+      if dev = %x[lshal |grep -e "block.device.*sdb" -B 5 |grep -e ^udi | grep -i volume | cut -d= -f 2 ].strip
+        unless dev.empty?
+        %x[thunar-volman -a #{dev}]
+        # mount dev
+
+        %x[lshal |grep -e "mount_poi.*media" ].match(/'(.*)'/)
+#        return line.match(/'(.*-)'/)[1]
+        return $1
+        # return path
+        end
+      end
+      false
+    end
+
     def umount_and_eject
       umount_usb
       eject_cdrom
@@ -18,8 +33,8 @@ module Utils
     end
 
     def source
-      return '/media/cdrom/' if cdrom?
-      if path = usb?
+       return '/media/cdrom/' if cdrom?
+      if path = mount_USB
         subpath = "hochzeit"
         keypath = File.join(path, subpath)
         if File.directory?(keypath)
@@ -32,16 +47,17 @@ module Utils
     end
 
     def cdrom?
+      %x[mount /media/cdrom/]
       !Dir.glob('/media/cdrom/**').empty?
     end
 
     def usb?
-      #!Dir.glob('/media/usb/**').empty?
-      output = %x[mount | grep 'uhelper=hal']
-      if md = output.match(/.* on (.*) type .*/)
-        return md[1]
-      end
-      false
+      return '/media/usb' if !Dir.glob('/media/usb/**').empty?
+      #output = %x[mount | grep 'uhelper=hal']
+      #if md = output.match(/.* on (.*) type .*/)
+      #  return md[1]
+      #end
+      #false
     end
 
     def mix_in_our_stuff(xmms)

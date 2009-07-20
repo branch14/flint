@@ -26,6 +26,8 @@ class FlintPanel < Wx::Panel
     @buffer = ''
     @data = nil
     _update
+    @timer = Wx::Timer.new(self)
+    evt_timer(@timer.id) { _update }
     set_focus
   end
 
@@ -46,7 +48,7 @@ class FlintPanel < Wx::Panel
   def _rewrite(url)
      url = url.gsub("\+"," ")
      url.match('(.*)/([^/]*)/(.*)')
-     [ $2, $3 ]
+     [ $3,  nil ]
   end
 
   def _update(code='0')
@@ -88,9 +90,10 @@ class FlintPanel < Wx::Panel
           end
         end
         if ttl = @data['track_ttl'].first.to_i
-          timer = Wx::Timer.new(self)
-          evt_timer(timer.id) { _update }
-          timer.start(ttl)
+          # timer = Wx::Timer.new(self)
+          # evt_timer(timer.id) { _update }
+          @timer.stop
+          @timer.start(ttl)
         end
       else
         dc.set_brush Wx::GREEN_BRUSH

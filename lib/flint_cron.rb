@@ -6,6 +6,7 @@ require File.join(File.dirname(__FILE__), 'xmms_adapter')
 require File.join(File.dirname(__FILE__), 'utils')
 
 $shutdown = false
+$pause = 10
 
 # register Ctrl-C
 trap('INT') do
@@ -24,7 +25,7 @@ _10min = 10 * 60 * 1000
 until $shutdown
 
   # sleep 10 seconds
-  sleep 10
+  sleep $pause
 
   puts "check at #{Time.now.strftime('%H:%M:%S')}"
 
@@ -41,7 +42,7 @@ until $shutdown
 
   # add a song if playlist doesn't contain at least 3 entries
   if list.size < 3
-    puts "mixing in out stuff" 
+    puts "running out of tracks, mixing in our stuff!" 
     puts Utils.mix_in_our_stuff(xmms) 
     # start the xmms2d if nescessary
     xmms.play

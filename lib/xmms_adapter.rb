@@ -73,11 +73,15 @@ class XmmsAdapter
   # returns info hash for added entry
   def append_from_collection(name)
     if coll = collection(name)
-      infos = info(coll.idlist)
-      leasttimes = (infos.map { |i| i[:timesplayed] }).min
-      candidates = infos.select { |i| i[:timesplayed] == leasttimes }
-      random_entry = candidates[rand(candidates.size)]
-      add(random_entry[:id])
+      infos = info(@xmms.coll_query_ids(coll).wait.value)
+      p leasttimes = (infos.map { |i| i[:timesplayed] }).min
+      p candidates = infos.select { |i| i[:timesplayed] == leasttimes }
+      p random_entry = candidates[rand(candidates.size)]
+      if random_entry
+        add(random_entry[:id])
+      else
+        puts "something went wrong"
+      end
       random_entry
     else
       puts "no collection named #{name}"
@@ -189,6 +193,9 @@ if $0 == __FILE__
     puts xmms.collection_name(616)
     when 'ttl'
     puts xmms.track_ttl
+    when 'mix'
+    require File.join(File.dirname(__FILE__), 'utils')
+    puts Utils.mix_in_our_stuff xmms
   end
   xmms.play
 end
