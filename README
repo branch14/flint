@@ -1,11 +1,22 @@
 == Welcome to Flint ==
 
-Flint is a Rails based Web App for Applications that deal with barcodes.
+Flint is a Ruby On Rails based web app for applications that deal with
+barcodes.
 
-Currently it's pragamtically aimed towards a runnig media art
+Currently it's pragmatically aimed towards a runnig media art
 installation in conjunction with xmms2.
 
 It consist of three parts:
+
+  - a Ruby On Rails backend
+  - a cron script
+  - a WxRuby frontend
+
+There is a tiny shell script that starts all three parts, with a
+little delay to make sure the backend is settled, when the frontend
+comes up.
+
+  $ ./start.sh
 
 
 === I Backend ===
@@ -39,15 +50,9 @@ Run
   $ ruby lib/flint_fe_wxruby.rb
 
 
-=== Suggestion ===
-
-  $ xterm -e ruby lib/flint_fe_wxruby.rb &
-  $ xterm -e ruby lib/flint_cron.rb &
-  $ xterm -e ruby lib/flint_fe_wxruby.rb &
-
 === API ===
 
-Functions called by client
+The frontend accesses the following url to submit input and recieve
+the information to be displayed. E.g.:
 
   $ curl http://0.0.0.0:3000/options/execute_by_code/123456123456.xml
-
