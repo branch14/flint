@@ -1,20 +1,44 @@
 == Welcome to Flint ==
 
-Flint is a Ruby On Rails based web app for applications that deal with
-barcodes.
+Flint is a an application which is based on Ruby On Rails and deals
+with barcodes. The current use case is a media art installation / juke
+box which uses the music playing daemon xmms2.
 
-Currently it's pragmatically aimed towards a runnig media art
-installation in conjunction with xmms2.
 
-It consist of three parts:
+=== The Story behind ===
 
-  - a Ruby On Rails backend
+I used flint for an interactive media art work at my wedding party. As
+a guest you were asked to bring a couple of songs on a disc or flash
+drive and a blank white cheque card with a unique barcode was given to
+you. Before scanning the barcode for the first time, you had to insert
+your disc or plugin your flash drive. Your selection of songs was
+copied to the disk. Subsequent scans of your barcode then randomly
+appended a single song of your previously stored collection to the
+playlist, unless one of your songs was already in the playlist and
+hadn't been played yet. Whenever a guest added a song to the playlist,
+a song from our list was added as well in order to have an even
+mixture of our selection and the selection of our guests. A cron
+script was checking if the playlist were going to run empty and in
+that case added songs. In addition, 'one-shot-skip-codes' were
+available, so everyone could skip single songs once in a while.
+
+
+=== Architecture ===
+
+The basic Rails application is antagonistic towards the use case
+(e.g. the logic that deals with xmms2). The use case may solely be
+implemented in the procedures that are stored in the database and may
+be manipulated through the provided interface.
+
+Flint consist of three parts:
+
+  - a Ruby On Rails backend (use case antagonistic)
   - a cron script
   - a WxRuby frontend
 
-There is a tiny shell script that starts all three parts, with a
-little delay to make sure the backend is settled, when the frontend
-comes up.
+There is a tiny shell script that starts all three parts with some
+delay to make sure the backend is settled before the frontend comes
+up.
 
   $ ./start.sh
 
